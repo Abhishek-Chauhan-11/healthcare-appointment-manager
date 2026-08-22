@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: healthcare-appointment-manager
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DEMO_DATA_ENABLED
+        value: true
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: healthcare-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: healthcare-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: healthcare-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: healthcare-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: healthcare-db
+          property: database
+
+databases:
+  - name: healthcare-db
+    plan: free

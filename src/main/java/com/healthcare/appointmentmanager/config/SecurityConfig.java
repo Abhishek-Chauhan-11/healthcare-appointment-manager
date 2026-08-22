@@ -25,11 +25,13 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/css/**",
-                                "/images/**"
+                                "/images/**",
+                                "/actuator/health"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
-                        .requestMatchers("/patient/**").hasRole("PATIENT")
+                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/doctor/**", "/api/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/patient/**", "/api/patient/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -43,7 +45,9 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                         .permitAll()
-                );
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

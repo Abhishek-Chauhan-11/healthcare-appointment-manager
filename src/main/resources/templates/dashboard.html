@@ -1,164 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Dashboard</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 <body>
-
-<nav class="navbar navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
-            Healthcare Appointment Manager
-        </a>
-
-        <form th:action="@{/logout}" method="post">
-            <button class="btn btn-light" type="submit">Logout</button>
-        </form>
-    </div>
-</nav>
-
-<section class="dashboard-header">
-    <div class="container">
-        <span class="role-badge" th:text="${portal}">ROLE</span>
-
-        <h1 th:text="${title}">Dashboard</h1>
-
-        <p>
-            Welcome,
-            <strong th:text="${user.fullName}">User</strong>
-        </p>
-
-        <p class="text-muted" th:text="${user.email}">
-            user@example.com
-        </p>
-    </div>
-</section>
-
+<nav class="navbar navbar-dark bg-primary"><div class="container">
+    <a class="navbar-brand fw-bold" th:href="@{/dashboard}">Healthcare Appointment Manager</a>
+    <form th:action="@{/logout}" method="post"><button class="btn btn-light" type="submit">Logout</button></form>
+</div></nav>
+<section class="dashboard-header"><div class="container">
+    <span class="role-badge" th:text="${portal}">ROLE</span>
+    <h1 th:text="${title}">Dashboard</h1>
+    <p class="mb-1">Welcome, <strong th:text="${user.fullName}">User</strong></p>
+    <p class="text-muted mb-0" th:text="${user.email}">user@example.com</p>
+</div></section>
 <main class="container py-5">
-
-    <!-- Admin options -->
+    <div class="alert alert-success" th:if="${param.calendarConnected}">Google Calendar connected.</div>
+    <div class="alert alert-success" th:if="${param.calendarDisconnected}">Google Calendar disconnected.</div>
+    <div class="alert alert-warning" th:if="${param.calendarNotConfigured}">Google Calendar credentials are not configured yet. See the README setup guide.</div>
+    <div class="alert alert-danger" th:if="${param.calendarError}">Google Calendar connection failed. Please try again.</div>
     <div class="row g-4" th:if="${portal == 'ADMIN'}">
-
-        <div class="col-md-6 col-lg-3">
-            <div class="dashboard-card">
-                <h4>Manage Doctors</h4>
-                <p>Create and update doctor profiles.</p>
-                <a th:href="@{/admin/doctors}" class="btn btn-primary">
-                    Open
-                </a>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="dashboard-card">
-                <h4>Doctor Schedules</h4>
-                <p>Configure working hours and slot duration.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="dashboard-card">
-                <h4>Leave Management</h4>
-                <p>Manage doctor leave and affected bookings.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="dashboard-card">
-                <h4>Appointments</h4>
-                <p>View appointments across the clinic.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>Manage Doctors</h4><p>Create doctor profiles and configure schedules.</p><a th:href="@{/admin/doctors}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>Leave Management</h4><p>Record doctor leave and handle affected bookings.</p><a th:href="@{/admin/leaves}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>All Appointments</h4><p>Monitor every clinic appointment and its status.</p><a th:href="@{/admin/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
-
-    <!-- Doctor options -->
     <div class="row g-4" th:if="${portal == 'DOCTOR'}">
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Upcoming Appointments</h4>
-                <p>View scheduled patient appointments.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Pre-Visit Summaries</h4>
-                <p>Review patient symptoms and AI summaries.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Visit Notes</h4>
-                <p>Add clinical notes and prescriptions.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Availability</h4>
-                <p>View working hours and leave dates.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
+        <div class="col-md-6"><div class="dashboard-card"><h4>Appointments & AI Summaries</h4><p>Review symptoms, urgency, visit history, and scheduled patients.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><h4>Visit Notes & Prescriptions</h4><p>Complete visits, generate patient summaries, and schedule medicine reminders.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
-
-    <!-- Patient options -->
     <div class="row g-4" th:if="${portal == 'PATIENT'}">
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Search Doctors</h4>
-                <p>Find doctors according to specialization.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Book Appointment</h4>
-                <p>Select a doctor, date and available slot.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>My Appointments</h4>
-                <p>View, reschedule or cancel appointments.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="dashboard-card">
-                <h4>Prescriptions</h4>
-                <p>View medication and follow-up information.</p>
-                <button class="btn btn-primary" disabled>Open</button>
-            </div>
-        </div>
-
+        <div class="col-md-6"><div class="dashboard-card"><h4>Find & Book a Doctor</h4><p>Search by specialization and choose a live available slot.</p><a th:href="@{/patient/doctors}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><h4>My Appointments</h4><p>View summaries and prescriptions, or reschedule and cancel bookings.</p><a th:href="@{/patient/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
-
+    <div class="integration-card mt-4">
+        <div><h5 class="mb-1">Google Calendar</h5><p class="mb-0 text-muted">Connect once to synchronize new, changed, and cancelled appointments.</p></div>
+        <div>
+            <span class="badge text-bg-success me-2" th:if="${calendarConnected}">Connected</span>
+            <a th:unless="${calendarConnected}" th:href="@{/calendar/connect}" class="btn btn-outline-primary" th:classappend="${!calendarConfigured} ? ' disabled' : ''">Connect Calendar</a>
+            <form class="d-inline" th:if="${calendarConnected}" th:action="@{/calendar/disconnect}" method="post"><button class="btn btn-outline-danger">Disconnect</button></form>
+        </div>
+    </div>
 </main>
-
 </body>
 </html>

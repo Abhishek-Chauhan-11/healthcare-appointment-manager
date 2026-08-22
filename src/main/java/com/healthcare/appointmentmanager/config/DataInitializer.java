@@ -1,23 +1,31 @@
 package com.healthcare.appointmentmanager.config;
 
 import com.healthcare.appointmentmanager.model.AppUser;
+import com.healthcare.appointmentmanager.model.DoctorProfile;
 import com.healthcare.appointmentmanager.model.Role;
 import com.healthcare.appointmentmanager.repository.AppUserRepository;
+import com.healthcare.appointmentmanager.repository.DoctorProfileRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.math.BigDecimal;
+import java.time.LocalTime;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
+    @ConditionalOnProperty(name = "app.demo-data.enabled", havingValue = "true", matchIfMissing = true)
     public CommandLineRunner createDemoUsers(
             AppUserRepository appUserRepository,
+            DoctorProfileRepository doctorProfileRepository,
             PasswordEncoder passwordEncoder) {
 
         return args -> {
-            createUserIfMissing(
+            AppUser doctor = createUserIfMissing(
                     appUserRepository,
                     passwordEncoder,
                     "System Administrator",
@@ -46,10 +54,24 @@ public class DataInitializer {
                     "7777777777",
                     Role.PATIENT
             );
+
+            if (doctorProfileRepository.findByUserId(doctor.getId()).isEmpty()) {
+                DoctorProfile profile = new DoctorProfile();
+                profile.setUser(doctor);
+                profile.setSpecialization("General Medicine");
+                profile.setQualification("MBBS, MD");
+                profile.setExperienceYears(8);
+                profile.setConsultationFee(new BigDecimal("500.00"));
+                profile.setWorkingStartTime(LocalTime.of(9, 0));
+                profile.setWorkingEndTime(LocalTime.of(17, 0));
+                profile.setSlotDurationMinutes(30);
+                profile.setActive(true);
+                doctorProfileRepository.save(profile);
+            }
         };
     }
 
-    private void createUserIfMissing(
+    private AppUser createUserIfMissing(
             AppUserRepository appUserRepository,
             PasswordEncoder passwordEncoder,
             String fullName,
@@ -58,7 +80,7 @@ public class DataInitializer {
             String phone,
             Role role) {
 
-        if (!appUserRepository.existsByEmailIgnoreCase(email)) {
+        return appUserRepository.findByEmailIgnoreCase(email).orElseGet(() -> {
             AppUser user = new AppUser(
                     fullName,
                     email,
@@ -66,8 +88,7 @@ public class DataInitializer {
                     phone,
                     role
             );
-
-            appUserRepository.save(user);
-        }
+            return appUserRepository.save(user);
+        });
     }
 }

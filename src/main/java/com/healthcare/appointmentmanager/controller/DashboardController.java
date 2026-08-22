@@ -2,6 +2,7 @@ package com.healthcare.appointmentmanager.controller;
 
 import com.healthcare.appointmentmanager.model.AppUser;
 import com.healthcare.appointmentmanager.repository.AppUserRepository;
+import com.healthcare.appointmentmanager.service.GoogleCalendarService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class DashboardController {
 
     private final AppUserRepository appUserRepository;
+    private final GoogleCalendarService calendarService;
 
-    public DashboardController(AppUserRepository appUserRepository) {
+    public DashboardController(AppUserRepository appUserRepository,
+                               GoogleCalendarService calendarService) {
         this.appUserRepository = appUserRepository;
+        this.calendarService = calendarService;
     }
 
     @GetMapping("/dashboard")
@@ -69,5 +73,7 @@ public class DashboardController {
         model.addAttribute("user", user);
         model.addAttribute("portal", portal);
         model.addAttribute("title", title);
+        model.addAttribute("calendarConfigured", calendarService.isConfigured());
+        model.addAttribute("calendarConnected", calendarService.isConnected(user.getId()));
     }
 }

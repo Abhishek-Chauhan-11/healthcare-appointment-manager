@@ -34,3 +34,8 @@ build/
 
 ### Project Database ###
 data/
+
+### Local secrets ###
+.env
+.env.*
+!.env.example

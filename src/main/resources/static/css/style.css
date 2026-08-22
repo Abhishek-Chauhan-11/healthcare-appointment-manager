@@ -87,3 +87,52 @@ body {
 .dashboard-card h4 {
     color: #0d6efd;
 }
+
+.page-narrow { max-width: 850px; }
+
+.integration-card,
+.appointment-card {
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.integration-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.slot-option input { position: absolute; opacity: 0; }
+.slot-option span {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #b8c7dc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.slot-option input:checked + span { color: white; background: #0d6efd; border-color: #0d6efd; }
+
+.summary-panel { padding: 20px; background: #edf5ff; border-left: 4px solid #0d6efd; border-radius: 8px; }
+.pre-line { white-space: pre-line; }
+.concern-cell { max-width: 260px; }
+.status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: .8rem; font-weight: 700; background: #e9ecef; }
+.status-booked { color: #084298; background: #cfe2ff; }
+.status-completed { color: #0f5132; background: #d1e7dd; }
+.status-cancelled { color: #842029; background: #f8d7da; }
+.status-held { color: #664d03; background: #fff3cd; }
+
+@media (max-width: 576px) {
+    .hero { padding: 65px 15px; }
+    .hero h1 { font-size: 2.2rem; }
+    .integration-card { align-items: flex-start; flex-direction: column; }
+}

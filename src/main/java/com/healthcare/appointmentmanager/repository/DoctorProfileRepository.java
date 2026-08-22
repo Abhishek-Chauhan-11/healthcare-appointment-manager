@@ -13,6 +13,8 @@ public interface DoctorProfileRepository
 
     List<DoctorProfile> findAllByOrderByIdAsc();
 
+    List<DoctorProfile> findByActiveTrueOrderByIdAsc();
+
     List<DoctorProfile>
     findByActiveTrueAndSpecializationContainingIgnoreCase(
             String specialization);

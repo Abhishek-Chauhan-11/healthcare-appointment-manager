@@ -22,6 +22,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
+                                "/login",
                                 "/register",
                                 "/css/**",
                                 "/images/**"
@@ -32,10 +33,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
+                        .permitAll()
                 );
 
         return http.build();

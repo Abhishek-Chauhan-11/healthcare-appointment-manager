@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Healthcare Manager</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<section class="auth-section">
+    <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="text-muted">Login to your healthcare account</p>
+
+        <div class="alert alert-danger" th:if="${param.error}">
+            Invalid email or password.
+        </div>
+
+        <div class="alert alert-success" th:if="${param.registered}">
+            Registration successful. You can now log in.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email"
+                       class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" name="password" type="password"
+                       class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center mt-3">
+            New patient?
+            <a href="/register">Create an account</a>
+        </p>
+
+        <p class="text-center">
+            <a href="/">Return to home</a>
+        </p>
+    </div>
+</section>
+
+</body>
+</html>

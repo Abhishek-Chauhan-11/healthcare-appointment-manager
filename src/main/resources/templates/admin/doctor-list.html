@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Doctors</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="/admin/dashboard">Admin Portal</a>
+
+    <form th:action="@{/logout}" method="post">
+      <button class="btn btn-light" type="submit">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<main class="container py-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manage Doctors</h1>
+
+    <a href="/admin/doctors/new" class="btn btn-primary">
+      Add Doctor
+    </a>
+  </div>
+
+  <div class="alert alert-success" th:if="${param.created}">
+    Doctor created successfully.
+  </div>
+
+  <div class="alert alert-info" th:if="${#lists.isEmpty(doctors)}">
+    No doctor profiles are currently available.
+  </div>
+
+  <div class="table-responsive" th:unless="${#lists.isEmpty(doctors)}">
+    <table class="table table-bordered table-hover bg-white">
+      <thead class="table-primary">
+      <tr>
+        <th>Name</th>
+        <th>Specialization</th>
+        <th>Qualification</th>
+        <th>Experience</th>
+        <th>Fee</th>
+        <th>Working Hours</th>
+        <th>Slot</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr th:each="doctor : ${doctors}">
+        <td th:text="${doctor.user.fullName}">Doctor</td>
+        <td th:text="${doctor.specialization}">Specialization</td>
+        <td th:text="${doctor.qualification}">Qualification</td>
+        <td>
+          <span th:text="${doctor.experienceYears}">0</span> years
+        </td>
+        <td>
+          ₹<span th:text="${doctor.consultationFee}">0</span>
+        </td>
+        <td>
+          <span th:text="${doctor.workingStartTime}"></span>
+          -
+          <span th:text="${doctor.workingEndTime}"></span>
+        </td>
+        <td>
+          <span th:text="${doctor.slotDurationMinutes}"></span> min
+        </td>
+        <td>
+                    <span class="badge bg-success"
+                          th:if="${doctor.active}">
+                        Active
+                    </span>
+
+          <span class="badge bg-secondary"
+                th:unless="${doctor.active}">
+                        Inactive
+                    </span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="/admin/dashboard" class="btn btn-outline-secondary">
+    Back to Dashboard
+  </a>
+
+</main>
+
+</body>
+</html>

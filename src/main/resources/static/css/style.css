@@ -54,3 +54,36 @@ body {
     color: #0d6efd;
     font-weight: 700;
 }
+
+.dashboard-header {
+    padding: 45px 0;
+    background: linear-gradient(135deg, #e7f1ff, #ffffff);
+}
+
+.dashboard-header h1 {
+    margin-top: 12px;
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    color: white;
+    background-color: #198754;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.dashboard-card {
+    height: 100%;
+    padding: 25px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card h4 {
+    color: #0d6efd;
+}

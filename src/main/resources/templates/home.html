@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Healthcare Appointment Manager</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            Healthcare Appointment Manager
+        </a>
+
+        <a href="/login" class="btn btn-light">Login</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container text-center">
+        <h1>Healthcare Made Simple</h1>
+
+        <p>
+            Book appointments, share symptoms, receive reminders
+            and manage follow-up care in one place.
+        </p>
+
+        <a href="/login" class="btn btn-primary btn-lg">
+            Get Started
+        </a>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="portal-card">
+                <h3>Patient Portal</h3>
+                <p>
+                    Search doctors, book appointments, submit symptoms
+                    and view prescriptions.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="portal-card">
+                <h3>Doctor Portal</h3>
+                <p>
+                    Review appointments, read symptom summaries and
+                    create post-visit notes.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="portal-card">
+                <h3>Admin Portal</h3>
+                <p>
+                    Manage doctors, schedules, working hours and
+                    leave dates.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>

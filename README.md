@@ -1,6 +1,6 @@
 # Healthcare Appointment Manager
 
-A role-based clinic appointment system built with Java 21, Spring Boot, Thymeleaf, and PostgreSQL/H2. It supports the complete appointment lifecycle, AI-assisted clinical summaries, email and medication reminders, doctor leave handling, and optional Google Calendar synchronization.
+A role-based clinic appointment system built with Java 17, Spring Boot, Thymeleaf, and PostgreSQL/H2. It supports the complete appointment lifecycle, AI-assisted clinical summaries, email and medication reminders, doctor leave handling, and optional Google Calendar synchronization.
 
 ## What is included
 
@@ -22,7 +22,7 @@ External integrations are optional. Without API keys, bookings and summaries sti
 ## Requirements
 
 - Windows 11 (or macOS/Linux)
-- JDK 21 or newer. Your JDK 25 installation can compile the configured Java 21 target.
+- JDK 17 or newer. Your JDK 25 installation can compile the configured Java 17 target.
 - Git
 - IntelliJ IDEA or another Java IDE
 
@@ -82,7 +82,7 @@ Hibernate creates/updates the local schema. The production profile uses PostgreS
 mvnw.cmd clean verify
 ```
 
-CI runs the same command with Java 21 on every push and pull request. The test profile uses an isolated in-memory H2 database and no external API keys.
+CI runs the same command with Java 17 on every push and pull request. The test profile uses an isolated in-memory H2 database and no external API keys.
 
 ## Docker and deployment
 

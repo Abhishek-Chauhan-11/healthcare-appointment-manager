@@ -29,9 +29,9 @@ class AppointmentBookingServiceTests {
 
     @Test
     void booksAnAvailableSlotAndCreatesSafeSummaryWithoutExternalKeys() {
-        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().getFirst();
+        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
         LocalDate date = LocalDate.now().plusDays(2);
-        LocalTime time = bookingService.availableSlots(doctor.getId(), date).getFirst();
+        LocalTime time = bookingService.availableSlots(doctor.getId(), date).get(0);
 
         Appointment appointment = bookingService.book(
                 "patient@healthcare.com", doctor.getId(), date, time,

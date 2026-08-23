@@ -1,6 +1,6 @@
 package com.healthcare.appointmentmanager.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.healthcare.appointmentmanager.model.UrgencyLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

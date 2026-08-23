@@ -42,7 +42,7 @@ class AiSummaryServiceTests {
                               "content": {
                                 "parts": [
                                   {
-                                    "text": "Urgency: Medium\nChief complaint:\nHeadache\nImportant details:\nTwo days\nSuggested questions:\n- When did it begin?\n- Is it worsening?\n- Any medicines?\nSafety note:\nThis is not a diagnosis."
+                                    "text": "Urgency: Medium; Chief complaint: Headache; Important details: Two days; Suggested questions: When did it begin? Is it worsening? Any medicines? Safety note: This is not a diagnosis."
                                   }
                                 ]
                               }

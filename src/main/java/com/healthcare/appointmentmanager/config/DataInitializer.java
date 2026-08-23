@@ -25,7 +25,7 @@ public class DataInitializer {
             PasswordEncoder passwordEncoder) {
 
         return args -> {
-            AppUser doctor = createUserIfMissing(
+            AppUser admin = createUserIfMissing(
                     appUserRepository,
                     passwordEncoder,
                     "System Administrator",
@@ -35,7 +35,7 @@ public class DataInitializer {
                     Role.ADMIN
             );
 
-            createUserIfMissing(
+            AppUser doctor = createUserIfMissing(
                     appUserRepository,
                     passwordEncoder,
                     "Dr. Demo",
@@ -56,7 +56,10 @@ public class DataInitializer {
             );
 
             if (doctorProfileRepository.findByUserId(doctor.getId()).isEmpty()) {
-                DoctorProfile profile = new DoctorProfile();
+                DoctorProfile profile = doctorProfileRepository
+                        .findByUserId(admin.getId())
+                        .orElseGet(DoctorProfile::new);
+
                 profile.setUser(doctor);
                 profile.setSpecialization("General Medicine");
                 profile.setQualification("MBBS, MD");

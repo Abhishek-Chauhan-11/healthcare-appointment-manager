@@ -2,14 +2,17 @@ package com.healthcare.appointmentmanager;
 
 import com.healthcare.appointmentmanager.model.Appointment;
 import com.healthcare.appointmentmanager.model.AppointmentStatus;
+import com.healthcare.appointmentmanager.model.AppUser;
 import com.healthcare.appointmentmanager.model.DoctorProfile;
 import com.healthcare.appointmentmanager.model.NotificationType;
+import com.healthcare.appointmentmanager.repository.AppUserRepository;
 import com.healthcare.appointmentmanager.repository.AppointmentRepository;
 import com.healthcare.appointmentmanager.repository.DoctorProfileRepository;
 import com.healthcare.appointmentmanager.repository.NotificationJobRepository;
 import com.healthcare.appointmentmanager.service.AppointmentBookingService;
 import com.healthcare.appointmentmanager.service.BusinessException;
 import com.healthcare.appointmentmanager.service.DoctorLeaveService;
+import com.healthcare.appointmentmanager.service.SlotHoldService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +38,9 @@ class AppointmentBookingServiceTests {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private AppUserRepository userRepository;
 
     @Autowired
     private NotificationJobRepository notificationRepository;
@@ -92,5 +98,42 @@ class AppointmentBookingServiceTests {
         assertThat(notificationRepository.findAll())
                 .anyMatch(job -> job.getType() == NotificationType.DOCTOR_LEAVE
                         && job.getRecipientEmail().equals("patient@healthcare.com"));
+    }
+
+    @Test
+    void completedVisitStillKeepsItsReservedTimeUnavailable() {
+        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
+        LocalDate selectedDate = LocalDate.now().plusDays(5);
+        LocalTime time = bookingService.availableSlots(doctor.getId(), selectedDate).get(0);
+        Appointment appointment = bookingService.book(
+                "patient@healthcare.com", doctor.getId(), selectedDate, time,
+                "Routine demonstration visit");
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.saveAndFlush(appointment);
+
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).doesNotContain(time);
+    }
+
+    @Test
+    void expiredHoldRemainsHiddenUntilCleanupReleasesItsDatabaseReservation() {
+        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
+        LocalDate selectedDate = LocalDate.now().plusDays(6);
+        LocalTime time = bookingService.availableSlots(doctor.getId(), selectedDate).get(0);
+        AppUser patient = userRepository.findByEmailIgnoreCase("patient@healthcare.com").orElseThrow();
+        Appointment appointment = new Appointment();
+        appointment.setDoctor(doctor);
+        appointment.setPatient(patient);
+        appointment.setAppointmentDate(selectedDate);
+        appointment.setStartTime(time);
+        appointment.setEndTime(time.plusMinutes(doctor.getSlotDurationMinutes()));
+        appointment.setSymptoms("Temporary slot hold");
+        appointment.setStatus(AppointmentStatus.HELD);
+        appointment.setReservationKey(SlotHoldService.reservationKey(doctor.getId(), selectedDate, time));
+        appointment.setHoldExpiresAt(java.time.LocalDateTime.now().minusMinutes(1));
+        appointmentRepository.saveAndFlush(appointment);
+
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).doesNotContain(time);
+        bookingService.removeExpiredHolds();
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).contains(time);
     }
 }

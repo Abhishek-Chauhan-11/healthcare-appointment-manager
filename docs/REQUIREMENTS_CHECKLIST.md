@@ -8,7 +8,7 @@ This file maps the assignment specification to the implemented feature and its m
 | Patient registration/login | `/register`, `/login`, BCrypt passwords |
 | Search doctors by specialization | `/patient/doctors`; active-doctor repository query |
 | Configure doctor details and slots | `/admin/doctors`; working times and duration on `DoctorProfile` |
-| Real-time slot availability | `/patient/doctors/{id}/book`; excludes past, leave, holds, and bookings |
+| Real-time slot availability | `/patient/doctors/{id}/book`; excludes past, leave, active holds, booked visits, and completed reservations |
 | Double/concurrent-booking protection | Five-minute `HELD` record plus unique `reservation_key` database constraint |
 | Reschedule/cancel | Patient appointment forms; reservation key released or replaced atomically |
 | Doctor leave handling | `/admin/leaves`; affected bookings cancelled, calendars removed, patient notification queued |

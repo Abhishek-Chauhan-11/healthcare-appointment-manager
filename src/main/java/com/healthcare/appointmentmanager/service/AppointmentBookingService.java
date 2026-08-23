@@ -73,10 +73,11 @@ public class AppointmentBookingService {
 
         List<Appointment> reservations = appointmentRepository
                 .findByDoctor_IdAndAppointmentDateAndStatusIn(
-                        doctorId, date, List.of(AppointmentStatus.HELD, AppointmentStatus.BOOKED));
+                        doctorId, date, List.of(
+                                AppointmentStatus.HELD,
+                                AppointmentStatus.BOOKED,
+                                AppointmentStatus.COMPLETED));
         List<LocalTime> reserved = reservations.stream()
-                .filter(a -> a.getStatus() == AppointmentStatus.BOOKED ||
-                        (a.getHoldExpiresAt() != null && a.getHoldExpiresAt().isAfter(LocalDateTime.now())))
                 .map(Appointment::getStartTime).toList();
 
         List<LocalTime> result = new ArrayList<>();

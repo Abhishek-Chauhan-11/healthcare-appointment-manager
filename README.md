@@ -56,7 +56,7 @@ Copy `.env.example` values into IntelliJ's Run Configuration environment variabl
 
 ### Gemini AI (free-tier option)
 
-Set `GEMINI_API_KEY`. The app uses Google's native Gemini API with `GEMINI_MODEL` (default `gemini-2.5-flash-lite`). If the key is missing, the quota is exceeded, or the provider is unavailable, the safety-focused local fallback is used automatically.
+Set `GEMINI_API_KEY`. The app uses Google's native Gemini API with `GEMINI_MODEL` (default `gemini-3.5-flash-lite`). If the key is missing, the quota is exceeded, or the provider is unavailable, the safety-focused local fallback is used automatically.
 
 The Gemini free tier is intended only for fictional demonstration data in this educational project. Do not submit real patient or confidential health information.
 

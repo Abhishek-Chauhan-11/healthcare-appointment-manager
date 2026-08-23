@@ -3,77 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="theme-color" content="#123e91">
     <title>Healthcare Appointment Manager</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/brand-mark.svg}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 <body>
 
 <nav class="navbar navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
-            Healthcare Appointment Manager
-        </a>
-
-        <a href="/login" class="btn btn-light">Login</a>
+        <a class="navbar-brand" th:href="@{/}">Healthcare Appointment Manager</a>
+        <a th:href="@{/login}" class="btn btn-light">Sign in</a>
     </div>
 </nav>
 
 <section class="hero">
-    <div class="container text-center">
-        <h1>Healthcare Made Simple</h1>
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <span class="eyebrow">Connected clinic care</span>
+            <h1>Better appointments.<br><span>Better follow-up.</span></h1>
+            <p>Find the right doctor, reserve a convenient time, and keep every part of your care journey organized in one secure place.</p>
+            <div class="hero-actions">
+                <a th:href="@{/login}" class="btn btn-primary btn-lg">Open your portal</a>
+                <a th:href="@{/register}" class="btn btn-outline-primary btn-lg">Create patient account</a>
+            </div>
+            <div class="trust-row" aria-label="Platform highlights">
+                <span>Role-based access</span>
+                <span>Smart scheduling</span>
+                <span>Care reminders</span>
+            </div>
+        </div>
 
-        <p>
-            Book appointments, share symptoms, receive reminders
-            and manage follow-up care in one place.
-        </p>
-
-        <a href="/login" class="btn btn-primary btn-lg">
-            Get Started
-        </a>
+        <div class="hero-panel" aria-label="Appointment dashboard preview">
+            <div class="preview-card">
+                <div class="preview-topbar">
+                    <strong>Care overview</strong>
+                    <span class="preview-date">Your day at a glance</span>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-label">Next appointment</div>
+                    <div class="appointment-preview">
+                        <div class="doctor-avatar">DR</div>
+                        <div>
+                            <h3>General consultation</h3>
+                            <p>Doctor profile · Confirmed visit</p>
+                        </div>
+                        <span class="time-pill">10:30 AM</span>
+                    </div>
+                    <div class="preview-stats">
+                        <div class="preview-stat">
+                            <strong>3</strong>
+                            <span>Portal roles</span>
+                        </div>
+                        <div class="preview-stat">
+                            <strong>24/7</strong>
+                            <span>Booking access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="container py-5">
+<section class="container features-section">
+    <div class="section-heading">
+        <span class="eyebrow">One coordinated platform</span>
+        <h2>Designed for everyone in the clinic</h2>
+        <p>Each portal keeps the right tools close at hand, without unnecessary complexity.</p>
+    </div>
     <div class="row g-4">
-
         <div class="col-md-4">
-            <div class="portal-card">
+            <article class="portal-card">
+                <span class="feature-icon" aria-hidden="true"><svg><use href="/images/icons.svg#patient"></use></svg></span>
                 <h3>Patient Portal</h3>
-                <p>
-                    Search doctors, book appointments, submit symptoms
-                    and view prescriptions.
-                </p>
-            </div>
+                <p>Search doctors, book or reschedule visits, share concerns, and review prescriptions.</p>
+            </article>
         </div>
-
         <div class="col-md-4">
-            <div class="portal-card">
+            <article class="portal-card is-doctor">
+                <span class="feature-icon" aria-hidden="true"><svg><use href="/images/icons.svg#doctor"></use></svg></span>
                 <h3>Doctor Portal</h3>
-                <p>
-                    Review appointments, read symptom summaries and
-                    create post-visit notes.
-                </p>
-            </div>
+                <p>Review upcoming appointments, concise symptom briefs, notes, and follow-up plans.</p>
+            </article>
         </div>
-
         <div class="col-md-4">
-            <div class="portal-card">
+            <article class="portal-card">
+                <span class="feature-icon" aria-hidden="true"><svg><use href="/images/icons.svg#shield"></use></svg></span>
                 <h3>Admin Portal</h3>
-                <p>
-                    Manage doctors, schedules, working hours and
-                    leave dates.
-                </p>
-            </div>
+                <p>Manage doctor profiles, working schedules, leave dates, and clinic appointments.</p>
+            </article>
         </div>
-
     </div>
 </section>
+
+<footer class="site-footer">
+    <div class="container">Healthcare Appointment Manager · Simple, coordinated care</div>
+</footer>
 
 </body>
 </html>

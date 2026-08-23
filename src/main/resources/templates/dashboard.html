@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Dashboard</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/brand-mark.svg}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
@@ -23,20 +24,20 @@
     <div class="alert alert-warning" th:if="${param.calendarNotConfigured}">Google Calendar credentials are not configured yet. See the README setup guide.</div>
     <div class="alert alert-danger" th:if="${param.calendarError}">Google Calendar connection failed. Please try again.</div>
     <div class="row g-4" th:if="${portal == 'ADMIN'}">
-        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>Manage Doctors</h4><p>Create doctor profiles and configure schedules.</p><a th:href="@{/admin/doctors}" class="btn btn-primary">Open</a></div></div>
-        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>Leave Management</h4><p>Record doctor leave and handle affected bookings.</p><a th:href="@{/admin/leaves}" class="btn btn-primary">Open</a></div></div>
-        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><h4>All Appointments</h4><p>Monitor every clinic appointment and its status.</p><a th:href="@{/admin/appointments}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#doctor"></use></svg></span><h4>Manage Doctors</h4><p>Create doctor profiles and configure schedules.</p><a th:href="@{/admin/doctors}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#leave"></use></svg></span><h4>Leave Management</h4><p>Record doctor leave and handle affected bookings.</p><a th:href="@{/admin/leaves}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6 col-lg-4"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#appointments"></use></svg></span><h4>All Appointments</h4><p>Monitor every clinic appointment and its status.</p><a th:href="@{/admin/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
     <div class="row g-4" th:if="${portal == 'DOCTOR'}">
-        <div class="col-md-6"><div class="dashboard-card"><h4>Appointments & AI Summaries</h4><p>Review symptoms, urgency, visit history, and scheduled patients.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
-        <div class="col-md-6"><div class="dashboard-card"><h4>Visit Notes & Prescriptions</h4><p>Complete visits, generate patient summaries, and schedule medicine reminders.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#appointments"></use></svg></span><h4>Appointments & AI Summaries</h4><p>Review symptoms, urgency, visit history, and scheduled patients.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#notes"></use></svg></span><h4>Visit Notes & Prescriptions</h4><p>Complete visits, generate patient summaries, and schedule medicine reminders.</p><a th:href="@{/doctor/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
     <div class="row g-4" th:if="${portal == 'PATIENT'}">
-        <div class="col-md-6"><div class="dashboard-card"><h4>Find & Book a Doctor</h4><p>Search by specialization and choose a live available slot.</p><a th:href="@{/patient/doctors}" class="btn btn-primary">Open</a></div></div>
-        <div class="col-md-6"><div class="dashboard-card"><h4>My Appointments</h4><p>View summaries and prescriptions, or reschedule and cancel bookings.</p><a th:href="@{/patient/appointments}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#search"></use></svg></span><h4>Find & Book a Doctor</h4><p>Search by specialization and choose a live available slot.</p><a th:href="@{/patient/doctors}" class="btn btn-primary">Open</a></div></div>
+        <div class="col-md-6"><div class="dashboard-card"><span class="dashboard-card-icon" aria-hidden="true"><svg><use href="/images/icons.svg#appointments"></use></svg></span><h4>My Appointments</h4><p>View summaries and prescriptions, or reschedule and cancel bookings.</p><a th:href="@{/patient/appointments}" class="btn btn-primary">Open</a></div></div>
     </div>
     <div class="integration-card mt-4">
-        <div><h5 class="mb-1">Google Calendar</h5><p class="mb-0 text-muted">Connect once to synchronize new, changed, and cancelled appointments.</p></div>
+        <div class="integration-copy"><span class="integration-icon" aria-hidden="true"><svg><use href="/images/icons.svg#calendar"></use></svg></span><div><h5 class="mb-1">Google Calendar</h5><p class="mb-0 text-muted">Connect once to synchronize new, changed, and cancelled appointments.</p></div></div>
         <div>
             <span class="badge text-bg-success me-2" th:if="${calendarConnected}">Connected</span>
             <a th:unless="${calendarConnected}" th:href="@{/calendar/connect}" class="btn btn-outline-primary" th:classappend="${!calendarConfigured} ? ' disabled' : ''">Connect Calendar</a>

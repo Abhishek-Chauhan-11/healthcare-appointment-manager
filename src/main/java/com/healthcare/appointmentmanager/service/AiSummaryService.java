@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -18,19 +19,28 @@ public class AiSummaryService {
     private static final Logger log = LoggerFactory.getLogger(AiSummaryService.class);
 
     private final RestClient restClient;
-    private final String apiKey;
-    private final String model;
-    private final String baseUrl;
+    private final String geminiApiKey;
+    private final String geminiModel;
+    private final String geminiBaseUrl;
+    private final String openAiApiKey;
+    private final String openAiModel;
+    private final String openAiBaseUrl;
 
     public AiSummaryService(
             RestClient.Builder builder,
-            @Value("${app.openai.api-key:}") String apiKey,
-            @Value("${app.openai.model:gpt-4.1-mini}") String model,
-            @Value("${app.openai.base-url:https://api.openai.com/v1}") String baseUrl) {
+            @Value("${app.gemini.api-key:}") String geminiApiKey,
+            @Value("${app.gemini.model:gemini-2.5-flash-lite}") String geminiModel,
+            @Value("${app.gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String geminiBaseUrl,
+            @Value("${app.openai.api-key:}") String openAiApiKey,
+            @Value("${app.openai.model:gpt-4.1-mini}") String openAiModel,
+            @Value("${app.openai.base-url:https://api.openai.com/v1}") String openAiBaseUrl) {
         this.restClient = builder.build();
-        this.apiKey = apiKey;
-        this.model = model;
-        this.baseUrl = baseUrl;
+        this.geminiApiKey = geminiApiKey;
+        this.geminiModel = geminiModel;
+        this.geminiBaseUrl = withoutTrailingSlash(geminiBaseUrl);
+        this.openAiApiKey = openAiApiKey;
+        this.openAiModel = openAiModel;
+        this.openAiBaseUrl = withoutTrailingSlash(openAiBaseUrl);
     }
 
     public AiSummaryResult generatePreVisitSummary(String symptoms) {
@@ -48,7 +58,7 @@ public class AiSummaryService {
                 """;
 
         try {
-            String output = callOpenAi(instructions, "Patient-provided symptoms:\n" + symptoms);
+            String output = callLlm(instructions, "Patient-provided symptoms:\n" + symptoms);
             return new AiSummaryResult(output, parseUrgency(output), true);
         } catch (Exception exception) {
             log.warn("LLM pre-visit summary unavailable; using safe fallback: {}", exception.getMessage());
@@ -71,7 +81,7 @@ public class AiSummaryService {
                 "\n\nFollow-up instructions:\n" + safe(followUp);
 
         try {
-            return callOpenAi(instructions, content);
+            return callLlm(instructions, content);
         } catch (Exception exception) {
             log.warn("LLM post-visit summary unavailable; using fallback: {}", exception.getMessage());
             return "Visit summary:\n" + safe(notes) +
@@ -81,18 +91,80 @@ public class AiSummaryService {
         }
     }
 
-    private String callOpenAi(String instructions, String userContent) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("OPENAI_API_KEY is not configured");
+    private String callLlm(String instructions, String userContent) {
+        RuntimeException geminiFailure = null;
+
+        if (hasText(geminiApiKey)) {
+            try {
+                return callGemini(instructions, userContent);
+            } catch (RuntimeException exception) {
+                geminiFailure = exception;
+                log.warn("Gemini request failed; checking optional OpenAI fallback: {}", exception.getMessage());
+            }
         }
 
+        if (hasText(openAiApiKey)) {
+            return callOpenAi(instructions, userContent);
+        }
+
+        if (geminiFailure != null) {
+            throw geminiFailure;
+        }
+
+        throw new IllegalStateException("No LLM API key is configured");
+    }
+
+    private String callGemini(String instructions, String userContent) {
         JsonNode response = restClient.post()
-                .uri(baseUrl + "/responses")
-                .header("Authorization", "Bearer " + apiKey)
+                .uri(geminiBaseUrl + "/models/" + geminiModel + ":generateContent")
+                .header("x-goog-api-key", geminiApiKey)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of(
-                        "model", model,
-                        "input", java.util.List.of(
+                        "system_instruction", Map.of(
+                                "parts", List.of(Map.of("text", instructions))
+                        ),
+                        "contents", List.of(Map.of(
+                                "role", "user",
+                                "parts", List.of(Map.of("text", userContent))
+                        )),
+                        "generationConfig", Map.of(
+                                "temperature", 0.2,
+                                "maxOutputTokens", 1000
+                        )
+                ))
+                .retrieve()
+                .body(JsonNode.class);
+
+        if (response == null) {
+            throw new IllegalStateException("Empty Gemini response");
+        }
+
+        JsonNode candidates = response.path("candidates");
+        if (candidates.isArray()) {
+            for (JsonNode candidate : candidates) {
+                JsonNode parts = candidate.path("content").path("parts");
+                if (parts.isArray()) {
+                    for (JsonNode part : parts) {
+                        JsonNode text = part.get("text");
+                        if (text != null && text.isTextual() && !text.asText().isBlank()) {
+                            return text.asText().trim();
+                        }
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("Gemini response did not contain text");
+    }
+
+    private String callOpenAi(String instructions, String userContent) {
+        JsonNode response = restClient.post()
+                .uri(openAiBaseUrl + "/responses")
+                .header("Authorization", "Bearer " + openAiApiKey)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of(
+                        "model", openAiModel,
+                        "input", List.of(
                                 Map.of("role", "developer", "content", instructions),
                                 Map.of("role", "user", "content", userContent)
                         )
@@ -101,7 +173,7 @@ public class AiSummaryService {
                 .body(JsonNode.class);
 
         if (response == null) {
-            throw new IllegalStateException("Empty LLM response");
+            throw new IllegalStateException("Empty OpenAI response");
         }
 
         JsonNode directText = response.get("output_text");
@@ -112,9 +184,9 @@ public class AiSummaryService {
         JsonNode output = response.path("output");
         if (output.isArray()) {
             for (JsonNode item : output) {
-                JsonNode content = item.path("content");
-                if (content.isArray()) {
-                    for (JsonNode part : content) {
+                JsonNode responseContent = item.path("content");
+                if (responseContent.isArray()) {
+                    for (JsonNode part : responseContent) {
                         JsonNode text = part.get("text");
                         if (text != null && text.isTextual() && !text.asText().isBlank()) {
                             return text.asText().trim();
@@ -124,7 +196,7 @@ public class AiSummaryService {
             }
         }
 
-        throw new IllegalStateException("LLM response did not contain text");
+        throw new IllegalStateException("OpenAI response did not contain text");
     }
 
     private UrgencyLevel parseUrgency(String output) {
@@ -166,5 +238,14 @@ public class AiSummaryService {
 
     private String safe(String value) {
         return value == null || value.isBlank() ? "None provided" : value.trim();
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
+
+    private String withoutTrailingSlash(String value) {
+        if (value == null) return "";
+        return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
     }
 }

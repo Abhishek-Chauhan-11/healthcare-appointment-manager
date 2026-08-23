@@ -36,6 +36,10 @@
     Doctor created successfully.
   </div>
 
+  <div class="alert alert-success" th:if="${param.updated}">
+    Doctor profile updated successfully.
+  </div>
+
   <div class="alert alert-info" th:if="${#lists.isEmpty(doctors)}">
     No doctor profiles are currently available.
   </div>
@@ -52,6 +56,7 @@
         <th>Working Hours</th>
         <th>Slot</th>
         <th>Status</th>
+        <th>Actions</th>
       </tr>
       </thead>
 
@@ -84,6 +89,10 @@
                 th:unless="${doctor.active}">
                         Inactive
                     </span>
+        </td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary"
+             th:href="@{/admin/doctors/{id}/edit(id=${doctor.id})}">Edit</a>
         </td>
       </tr>
       </tbody>

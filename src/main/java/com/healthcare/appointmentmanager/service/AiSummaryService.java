@@ -216,18 +216,45 @@ public class AiSummaryService {
 
     private UrgencyLevel fallbackUrgency(String symptoms) {
         String lower = symptoms.toLowerCase(Locale.ROOT);
-        if (containsAny(lower, "chest pain", "difficulty breathing", "unconscious", "severe bleeding", "stroke", "suicidal")) {
+        if (containsAnyNonNegated(lower, "chest pain", "difficulty breathing", "unconscious", "severe bleeding", "stroke", "suicidal")) {
             return UrgencyLevel.HIGH;
         }
-        if (containsAny(lower, "high fever", "persistent vomiting", "severe pain", "worsening", "dizziness")) {
+        if (containsAnyNonNegated(lower, "high fever", "persistent vomiting", "severe pain", "worsening", "dizziness")) {
             return UrgencyLevel.MEDIUM;
         }
         return UrgencyLevel.LOW;
     }
 
-    private boolean containsAny(String value, String... terms) {
-        for (String term : terms) if (value.contains(term)) return true;
+    private boolean containsAnyNonNegated(String value, String... terms) {
+        for (String term : terms) {
+            int fromIndex = 0;
+            int matchIndex;
+            while ((matchIndex = value.indexOf(term, fromIndex)) >= 0) {
+                if (!isNegated(value, matchIndex)) {
+                    return true;
+                }
+                fromIndex = matchIndex + term.length();
+            }
+        }
         return false;
+    }
+
+    private boolean isNegated(String value, int symptomIndex) {
+        int contextStart = Math.max(0, symptomIndex - 60);
+        String context = value.substring(contextStart, symptomIndex);
+
+        int lastBoundary = Math.max(
+                Math.max(context.lastIndexOf('.'), context.lastIndexOf(',')),
+                Math.max(context.lastIndexOf(';'), context.lastIndexOf(':'))
+        );
+        context = context.substring(lastBoundary + 1);
+
+        int contrast = Math.max(context.lastIndexOf(" but "), context.lastIndexOf(" however "));
+        if (contrast >= 0) {
+            context = context.substring(contrast + 1);
+        }
+
+        return context.matches(".*\\b(no|not|without|denies|denied|denying)\\b.*");
     }
 
     private String fallbackPreVisit(String symptoms, UrgencyLevel urgency) {

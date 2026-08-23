@@ -73,10 +73,29 @@ class AiSummaryServiceTests {
                 "https://api.openai.com/v1"
         );
 
-        AiSummaryResult result = service.generatePreVisitSummary("Mild headache for two days");
+        AiSummaryResult result = service.generatePreVisitSummary(
+                "Mild headache for two days and occasional tiredness. No chest pain or difficulty breathing."
+        );
 
         assertFalse(result.generatedByLlm());
         assertEquals(UrgencyLevel.LOW, result.urgencyLevel());
         assertTrue(result.summary().contains("This summary is not a diagnosis"));
+    }
+
+    @Test
+    void keepsNonNegatedEmergencySymptomsHighUrgency() {
+        AiSummaryService service = new AiSummaryService(
+                RestClient.builder(),
+                "",
+                "gemini-2.5-flash-lite",
+                "https://generativelanguage.googleapis.com/v1beta",
+                "",
+                "gpt-4.1-mini",
+                "https://api.openai.com/v1"
+        );
+
+        AiSummaryResult result = service.generatePreVisitSummary("Severe chest pain since this morning");
+
+        assertEquals(UrgencyLevel.HIGH, result.urgencyLevel());
     }
 }

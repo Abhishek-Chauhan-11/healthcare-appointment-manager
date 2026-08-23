@@ -21,7 +21,7 @@ The Render free service can take about a minute to wake after inactivity. Use fi
 5. **Patient:** open My Appointments to show the patient-friendly post-visit summary, clinician-entered prescription, and follow-up instructions.
 6. **Leave handling:** as admin, add leave on a future booked date. Show that the appointment becomes cancelled and the slot reservation is released.
 7. **Calendar:** connect a test Google account from each relevant dashboard. A booking creates independent patient/doctor events; reschedule and cancel synchronize both.
-8. **Failure safety:** explain that missing/unavailable AI and email providers do not block bookings. AI has a local safe fallback; email jobs remain in the durable notification outbox for audit/retry.
+8. **Failure safety:** The missing/unavailable AI and email providers do not block bookings. AI has a local safe fallback; email jobs remain in the durable notification outbox for audit/retry.
 
 ## Suggested fictional text
 

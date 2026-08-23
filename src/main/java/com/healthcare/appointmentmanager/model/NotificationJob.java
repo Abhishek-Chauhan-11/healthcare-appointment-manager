@@ -1,7 +1,9 @@
 package com.healthcare.appointmentmanager.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,7 +28,7 @@ public class NotificationJob {
     @Column(nullable = false)
     private String subject;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     @Column(nullable = false)
     private String body;
 
@@ -40,7 +42,7 @@ public class NotificationJob {
     @Column(nullable = false)
     private LocalDateTime nextAttemptAt = LocalDateTime.now();
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String lastError;
 
     @Column(nullable = false, updatable = false)

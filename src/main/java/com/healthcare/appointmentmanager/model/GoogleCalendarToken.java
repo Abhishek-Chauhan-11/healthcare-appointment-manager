@@ -1,7 +1,9 @@
 package com.healthcare.appointmentmanager.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,11 +18,11 @@ public class GoogleCalendarToken {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private AppUser user;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     @Column(nullable = false)
     private String accessToken;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String refreshToken;
 
     @Column(nullable = false)

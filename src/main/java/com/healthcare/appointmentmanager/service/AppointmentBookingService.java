@@ -78,9 +78,6 @@ public class AppointmentBookingService {
                                 AppointmentStatus.BOOKED,
                                 AppointmentStatus.COMPLETED));
         List<LocalTime> reserved = reservations.stream()
-                .filter(a -> a.getStatus() == AppointmentStatus.BOOKED ||
-                        a.getStatus() == AppointmentStatus.COMPLETED ||
-                        (a.getHoldExpiresAt() != null && a.getHoldExpiresAt().isAfter(LocalDateTime.now())))
                 .map(Appointment::getStartTime).toList();
 
         List<LocalTime> result = new ArrayList<>();

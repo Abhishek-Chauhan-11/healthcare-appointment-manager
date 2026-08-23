@@ -107,4 +107,21 @@ class AppointmentBookingServiceTests {
 
         assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).doesNotContain(time);
     }
+
+    @Test
+    void expiredHoldRemainsHiddenUntilCleanupReleasesItsDatabaseReservation() {
+        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
+        LocalDate selectedDate = LocalDate.now().plusDays(6);
+        LocalTime time = bookingService.availableSlots(doctor.getId(), selectedDate).get(0);
+        Appointment appointment = bookingService.book(
+                "patient@healthcare.com", doctor.getId(), selectedDate, time,
+                "Routine demonstration visit");
+        appointment.setStatus(AppointmentStatus.HELD);
+        appointment.setHoldExpiresAt(java.time.LocalDateTime.now().minusMinutes(1));
+        appointmentRepository.saveAndFlush(appointment);
+
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).doesNotContain(time);
+        bookingService.removeExpiredHolds();
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).contains(time);
+    }
 }

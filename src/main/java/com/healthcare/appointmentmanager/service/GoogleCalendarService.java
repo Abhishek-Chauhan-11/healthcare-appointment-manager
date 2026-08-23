@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -118,7 +117,7 @@ public class GoogleCalendarService {
             GoogleCalendarToken token = tokenRepository.findByUser_Id(appointment.getPatient().getId()).orElse(null);
             if (token == null) return;
             JsonNode response = restClient.post()
-                    .uri(EVENTS_URL + "?sendUpdates=all")
+                    .uri(EVENTS_URL + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(eventPayload(appointment))
@@ -139,7 +138,7 @@ public class GoogleCalendarService {
             if (token == null) return;
             String eventId = UriUtils.encodePathSegment(appointment.getGoogleEventId(), StandardCharsets.UTF_8);
             restClient.put()
-                    .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=all")
+                    .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(eventPayload(appointment))
@@ -156,7 +155,7 @@ public class GoogleCalendarService {
             if (token == null) return;
             String eventId = UriUtils.encodePathSegment(appointment.getGoogleEventId(), StandardCharsets.UTF_8);
             restClient.delete()
-                    .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=all")
+                    .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))
                     .retrieve().toBodilessEntity();
         } catch (Exception exception) {
@@ -196,11 +195,7 @@ public class GoogleCalendarService {
                 "summary", "Medical appointment with " + appointment.getDoctor().getUser().getFullName(),
                 "description", "Healthcare Appointment Manager booking. Do not place medical symptoms in calendar descriptions.",
                 "start", Map.of("dateTime", start, "timeZone", zoneId.getId()),
-                "end", Map.of("dateTime", end, "timeZone", zoneId.getId()),
-                "attendees", List.of(
-                        Map.of("email", appointment.getPatient().getEmail()),
-                        Map.of("email", appointment.getDoctor().getUser().getEmail())
-                )
+                "end", Map.of("dateTime", end, "timeZone", zoneId.getId())
         );
     }
 }

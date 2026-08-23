@@ -2,6 +2,8 @@
 
 A role-based clinic appointment system built with Java 17, Spring Boot, Thymeleaf, and PostgreSQL/H2. It supports the complete appointment lifecycle, AI-assisted clinical summaries, email and medication reminders, doctor leave handling, and optional Google Calendar synchronization.
 
+**Live demonstration:** [healthcare-appointment-manager-1per.onrender.com](https://healthcare-appointment-manager-1per.onrender.com)
+
 ## What is included
 
 - Patient registration and secure login with BCrypt passwords
@@ -13,7 +15,7 @@ A role-based clinic appointment system built with Java 17, Spring Boot, Thymelea
 - AI pre-visit summaries with urgency triage and safe local fallback
 - Doctor visit notes, prescriptions, patient-friendly post-visit summaries, and medication reminders
 - SendGrid notification outbox with retries and audit status
-- Google Calendar OAuth, event creation, update, and cancellation
+- Google Calendar OAuth with patient and doctor event creation, update, and cancellation
 - Read-only JSON endpoints for each role
 - H2 for local use, PostgreSQL production profile, Docker, Render blueprint, and GitHub Actions CI
 
@@ -76,11 +78,13 @@ Set `SENDGRID_API_KEY` and a verified `SENDGRID_FROM_EMAIL`. Email is sent by a 
 4. Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI`.
 5. Sign in and click **Connect Calendar** on a dashboard.
 
-Only the `calendar.events` scope is requested. Medical symptoms are never placed in event descriptions.
+Patients and doctors connect their own accounts independently. A new booking is added to both calendars when both users are connected; rescheduling and cancellation synchronize both stored events. Only the `calendar.events` scope is requested. Medical symptoms are never placed in event descriptions.
 
 ## Database and API
 
 Hibernate creates/updates the local schema. The production profile uses PostgreSQL. Entity details are in [docs/DATABASE.md](docs/DATABASE.md), JSON routes are in [docs/API.md](docs/API.md), and the architecture is in [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md).
+
+For evaluation, follow the exact role-by-role walkthrough in [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md) and the specification mapping in [docs/REQUIREMENTS_CHECKLIST.md](docs/REQUIREMENTS_CHECKLIST.md).
 
 ## Tests and build
 
@@ -98,6 +102,8 @@ docker run -p 8080:8080 healthcare-appointment-manager
 ```
 
 `render.yaml` provisions the web service and PostgreSQL database. For a public deployment, set API credentials in the host's secret environment settings. Set `DEMO_DATA_ENABLED=false` and provision real users before production use; the included demo credentials are only for evaluation.
+
+The complete source can also be downloaded as a ZIP from the repository's **Code → Download ZIP** menu. Do not include local `data/`, `.env`, `target/`, or IDE folders in a submitted archive.
 
 ## Important medical/privacy note
 

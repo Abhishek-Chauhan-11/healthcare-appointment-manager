@@ -1,6 +1,6 @@
 # LLM Prompts and Safety
 
-The application uses OpenAI's Responses API only when `OPENAI_API_KEY` is configured. Prompts live in `AiSummaryService` so they are version-controlled and auditable.
+The application uses Google's Gemini API when `GEMINI_API_KEY` is configured. OpenAI's Responses API remains an optional secondary provider when `OPENAI_API_KEY` is configured. Prompts live in `AiSummaryService` so they are version-controlled and auditable.
 
 ## Pre-visit prompt
 
@@ -19,7 +19,7 @@ Suggested questions:
 Safety note:
 ```
 
-The instruction explicitly prohibits diagnosis. If the provider is unavailable, the fallback preserves the original text, assigns keyword-based urgency, provides generic history questions, and shows an emergency safety warning.
+The instruction explicitly prohibits diagnosis. If every configured provider is unavailable, the fallback preserves the original text, assigns negation-aware keyword urgency, provides generic history questions, and shows an emergency safety warning.
 
 ## Post-visit prompt
 

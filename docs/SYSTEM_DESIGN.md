@@ -10,13 +10,15 @@ The application is a Spring Boot modular monolith. Thymeleaf controllers provide
 2. A patient searches active doctors and requests slots for a date.
 3. Availability excludes past times, leave dates, booked appointments, and unexpired holds.
 4. Booking inserts a five-minute `HELD` appointment with a database-unique reservation key. This prevents two concurrent requests from owning the same slot.
-5. The AI service generates a pre-visit brief and urgency cue. If OpenAI is unavailable, a deterministic safe fallback is used. The hold becomes `BOOKED`.
-6. Calendar synchronization is attempted only for connected users. Email confirmation jobs are committed to an outbox and sent asynchronously.
+5. The AI service generates a pre-visit brief and urgency cue. If Gemini and the optional OpenAI provider are unavailable, a deterministic safe fallback is used. The hold becomes `BOOKED`.
+6. Calendar synchronization is attempted independently for the connected patient and doctor accounts. Their event IDs are stored separately so reschedule/cancellation updates both. Email confirmation jobs are committed to an outbox and sent asynchronously.
 7. A doctor reviews the brief, records clinical notes/prescription/follow-up, and completes the visit. A patient-friendly summary and optional medication-reminder schedule are generated.
 
 ## Reliability boundaries
 
-Booking data is authoritative. OpenAI, Google, and SendGrid failures never roll back a successful database operation. Calendar calls are best effort. Notifications use stored jobs with bounded retries; when no email provider is configured they remain visible as skipped audit entries. Expired holds and due reminders are processed by idempotent scheduled scans.
+Booking data is authoritative. AI-provider, Google, and SendGrid failures never roll back a successful database operation. Calendar calls are best effort. Notifications use stored jobs with bounded retries; when no email provider is configured they remain visible as skipped audit entries. Expired holds and due reminders are processed by idempotent scheduled scans.
+
+When an admin records doctor leave, the service finds all active holds/bookings for that doctor and date, cancels them, frees their reservation keys, removes connected calendar events, and queues patient notifications. Patients can immediately choose another open slot.
 
 ## Security and privacy
 

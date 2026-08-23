@@ -28,17 +28,18 @@ class AppointmentBookingServiceTests {
     private DoctorProfileRepository doctorRepository;
 
     @Test
-    void booksAnAvailableSlotAndCreatesSafeSummaryWithoutExternalKeys() {
+    void booksAnAvailableSlotOnTheSelectedDateAndCreatesSafeSummary() {
         DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
-        LocalDate date = LocalDate.now().plusDays(2);
-        LocalTime time = bookingService.availableSlots(doctor.getId(), date).get(0);
+        LocalDate selectedDate = LocalDate.now().plusDays(2);
+        LocalTime time = bookingService.availableSlots(doctor.getId(), selectedDate).get(0);
 
         Appointment appointment = bookingService.book(
-                "patient@healthcare.com", doctor.getId(), date, time,
+                "patient@healthcare.com", doctor.getId(), selectedDate, time,
                 "Mild headache since yesterday");
 
+        assertThat(appointment.getAppointmentDate()).isEqualTo(selectedDate);
         assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.BOOKED);
-        assertThat(appointment.getReservationKey()).isNotBlank();
+        assertThat(appointment.getReservationKey()).contains(selectedDate.toString());
         assertThat(appointment.getPreVisitSummary()).contains("Chief complaint");
     }
 }

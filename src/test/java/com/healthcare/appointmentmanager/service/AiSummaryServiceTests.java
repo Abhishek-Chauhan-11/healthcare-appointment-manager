@@ -24,14 +24,14 @@ class AiSummaryServiceTests {
         AiSummaryService service = new AiSummaryService(
                 builder,
                 "test-gemini-key",
-                "gemini-2.5-flash-lite",
+                "gemini-3.5-flash-lite",
                 "https://gemini.test/v1beta/",
                 "",
                 "gpt-4.1-mini",
                 "https://api.openai.com/v1"
         );
 
-        server.expect(requestTo("https://gemini.test/v1beta/models/gemini-2.5-flash-lite:generateContent"))
+        server.expect(requestTo("https://gemini.test/v1beta/models/gemini-3.5-flash-lite:generateContent"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("x-goog-api-key", "test-gemini-key"))
                 .andRespond(withSuccess(
@@ -66,7 +66,7 @@ class AiSummaryServiceTests {
         AiSummaryService service = new AiSummaryService(
                 RestClient.builder(),
                 "",
-                "gemini-2.5-flash-lite",
+                "gemini-3.5-flash-lite",
                 "https://generativelanguage.googleapis.com/v1beta",
                 "",
                 "gpt-4.1-mini",
@@ -87,7 +87,7 @@ class AiSummaryServiceTests {
         AiSummaryService service = new AiSummaryService(
                 RestClient.builder(),
                 "",
-                "gemini-2.5-flash-lite",
+                "gemini-3.5-flash-lite",
                 "https://generativelanguage.googleapis.com/v1beta",
                 "",
                 "gpt-4.1-mini",

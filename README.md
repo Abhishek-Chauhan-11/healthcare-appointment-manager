@@ -54,9 +54,15 @@ The local H2 console is at [http://localhost:8080/h2-console](http://localhost:8
 
 Copy `.env.example` values into IntelliJ's Run Configuration environment variables (or set them in Windows). Never commit real keys.
 
-### OpenAI
+### Gemini AI (free-tier option)
 
-Set `OPENAI_API_KEY`. The app calls the Responses API using `OPENAI_MODEL` (default `gpt-4.1-mini`). See [LLM_PROMPTS.md](LLM_PROMPTS.md) for prompts and safety rules.
+Set `GEMINI_API_KEY`. The app uses Google's native Gemini API with `GEMINI_MODEL` (default `gemini-2.5-flash-lite`). If the key is missing, the quota is exceeded, or the provider is unavailable, the safety-focused local fallback is used automatically.
+
+The Gemini free tier is intended only for fictional demonstration data in this educational project. Do not submit real patient or confidential health information.
+
+### OpenAI (optional alternative)
+
+Set `OPENAI_API_KEY` to keep OpenAI available as a secondary provider. Gemini is tried first when both keys are present. See [LLM_PROMPTS.md](LLM_PROMPTS.md) for prompts and safety rules.
 
 ### SendGrid
 

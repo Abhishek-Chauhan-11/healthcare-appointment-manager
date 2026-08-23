@@ -113,30 +113,56 @@ public class GoogleCalendarService {
     }
 
     public void createEventIfConnected(Appointment appointment) {
+        Long patientId = appointment.getPatient().getId();
+        String patientEventId = createEventForUser(patientId, appointment);
+        if (patientEventId != null) {
+            appointment.setGoogleEventId(patientEventId);
+            appointment.setCalendarOwnerUserId(patientId);
+        }
+
+        Long doctorUserId = appointment.getDoctor().getUser().getId();
+        String doctorEventId = createEventForUser(doctorUserId, appointment);
+        if (doctorEventId != null) {
+            appointment.setDoctorGoogleEventId(doctorEventId);
+            appointment.setDoctorCalendarOwnerUserId(doctorUserId);
+        }
+    }
+
+    public void updateEventIfConnected(Appointment appointment) {
+        updateEventForUser(appointment.getCalendarOwnerUserId(), appointment.getGoogleEventId(), appointment);
+        updateEventForUser(appointment.getDoctorCalendarOwnerUserId(), appointment.getDoctorGoogleEventId(), appointment);
+    }
+
+    public void deleteEventIfConnected(Appointment appointment) {
+        deleteEventForUser(appointment.getCalendarOwnerUserId(), appointment.getGoogleEventId());
+        deleteEventForUser(appointment.getDoctorCalendarOwnerUserId(), appointment.getDoctorGoogleEventId());
+    }
+
+    private String createEventForUser(Long userId, Appointment appointment) {
+        if (userId == null) return null;
         try {
-            GoogleCalendarToken token = tokenRepository.findByUser_Id(appointment.getPatient().getId()).orElse(null);
-            if (token == null) return;
+            GoogleCalendarToken token = tokenRepository.findByUser_Id(userId).orElse(null);
+            if (token == null) return null;
             JsonNode response = restClient.post()
                     .uri(EVENTS_URL + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(eventPayload(appointment))
                     .retrieve().body(JsonNode.class);
-            if (response != null && !response.path("id").asText().isBlank()) {
-                appointment.setGoogleEventId(response.path("id").asText());
-                appointment.setCalendarOwnerUserId(appointment.getPatient().getId());
-            }
+            if (response == null || response.path("id").asText().isBlank()) return null;
+            return response.path("id").asText();
         } catch (Exception exception) {
             log.warn("Calendar event creation failed without breaking booking: {}", exception.getMessage());
+            return null;
         }
     }
 
-    public void updateEventIfConnected(Appointment appointment) {
-        if (appointment.getGoogleEventId() == null || appointment.getCalendarOwnerUserId() == null) return;
+    private void updateEventForUser(Long userId, String storedEventId, Appointment appointment) {
+        if (userId == null || storedEventId == null || storedEventId.isBlank()) return;
         try {
-            GoogleCalendarToken token = tokenRepository.findByUser_Id(appointment.getCalendarOwnerUserId()).orElse(null);
+            GoogleCalendarToken token = tokenRepository.findByUser_Id(userId).orElse(null);
             if (token == null) return;
-            String eventId = UriUtils.encodePathSegment(appointment.getGoogleEventId(), StandardCharsets.UTF_8);
+            String eventId = UriUtils.encodePathSegment(storedEventId, StandardCharsets.UTF_8);
             restClient.put()
                     .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))
@@ -148,12 +174,12 @@ public class GoogleCalendarService {
         }
     }
 
-    public void deleteEventIfConnected(Appointment appointment) {
-        if (appointment.getGoogleEventId() == null || appointment.getCalendarOwnerUserId() == null) return;
+    private void deleteEventForUser(Long userId, String storedEventId) {
+        if (userId == null || storedEventId == null || storedEventId.isBlank()) return;
         try {
-            GoogleCalendarToken token = tokenRepository.findByUser_Id(appointment.getCalendarOwnerUserId()).orElse(null);
+            GoogleCalendarToken token = tokenRepository.findByUser_Id(userId).orElse(null);
             if (token == null) return;
-            String eventId = UriUtils.encodePathSegment(appointment.getGoogleEventId(), StandardCharsets.UTF_8);
+            String eventId = UriUtils.encodePathSegment(storedEventId, StandardCharsets.UTF_8);
             restClient.delete()
                     .uri(EVENTS_URL + "/" + eventId + "?sendUpdates=none")
                     .header("Authorization", "Bearer " + validAccessToken(token))

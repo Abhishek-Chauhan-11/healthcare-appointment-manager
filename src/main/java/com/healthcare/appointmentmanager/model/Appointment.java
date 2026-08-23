@@ -72,8 +72,13 @@ public class Appointment {
 
     private LocalDate medicationStartDate;
     private LocalDate medicationEndDate;
+
+    // The original fields store the event created in the patient's calendar.
+    // Separate doctor fields allow both connected users to receive synchronized events.
     private String googleEventId;
     private Long calendarOwnerUserId;
+    private String doctorGoogleEventId;
+    private Long doctorCalendarOwnerUserId;
     private boolean appointmentReminderQueued;
 
     @Version
@@ -140,6 +145,10 @@ public class Appointment {
     public void setGoogleEventId(String googleEventId) { this.googleEventId = googleEventId; }
     public Long getCalendarOwnerUserId() { return calendarOwnerUserId; }
     public void setCalendarOwnerUserId(Long calendarOwnerUserId) { this.calendarOwnerUserId = calendarOwnerUserId; }
+    public String getDoctorGoogleEventId() { return doctorGoogleEventId; }
+    public void setDoctorGoogleEventId(String doctorGoogleEventId) { this.doctorGoogleEventId = doctorGoogleEventId; }
+    public Long getDoctorCalendarOwnerUserId() { return doctorCalendarOwnerUserId; }
+    public void setDoctorCalendarOwnerUserId(Long doctorCalendarOwnerUserId) { this.doctorCalendarOwnerUserId = doctorCalendarOwnerUserId; }
     public boolean isAppointmentReminderQueued() { return appointmentReminderQueued; }
     public void setAppointmentReminderQueued(boolean appointmentReminderQueued) { this.appointmentReminderQueued = appointmentReminderQueued; }
     public Long getVersion() { return version; }

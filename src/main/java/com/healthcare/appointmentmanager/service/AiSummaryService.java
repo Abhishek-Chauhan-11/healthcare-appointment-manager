@@ -30,7 +30,7 @@ public class AiSummaryService {
     public AiSummaryService(
             RestClient.Builder builder,
             @Value("${app.gemini.api-key:}") String geminiApiKey,
-            @Value("${app.gemini.model:gemini-2.5-flash-lite}") String geminiModel,
+            @Value("${app.gemini.model:gemini-3.5-flash-lite}") String geminiModel,
             @Value("${app.gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String geminiBaseUrl,
             @Value("${app.openai.api-key:}") String openAiApiKey,
             @Value("${app.openai.model:gpt-4.1-mini}") String openAiModel,

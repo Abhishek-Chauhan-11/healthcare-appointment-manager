@@ -1,6 +1,7 @@
 package com.healthcare.appointmentmanager.service;
 
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import com.healthcare.appointmentmanager.model.UrgencyLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +116,7 @@ public class AiSummaryService {
     }
 
     private String callGemini(String instructions, String userContent) {
-        JsonNode response = restClient.post()
+        String responseBody = restClient.post()
                 .uri(geminiBaseUrl + "/models/" + geminiModel + ":generateContent")
                 .header("x-goog-api-key", geminiApiKey)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -133,12 +134,9 @@ public class AiSummaryService {
                         )
                 ))
                 .retrieve()
-                .body(JsonNode.class);
+                .body(String.class);
 
-        if (response == null) {
-            throw new IllegalStateException("Empty Gemini response");
-        }
-
+        JsonNode response = parseJsonResponse(responseBody, "Gemini");
         JsonNode candidates = response.path("candidates");
         if (candidates.isArray()) {
             for (JsonNode candidate : candidates) {
@@ -158,7 +156,7 @@ public class AiSummaryService {
     }
 
     private String callOpenAi(String instructions, String userContent) {
-        JsonNode response = restClient.post()
+        String responseBody = restClient.post()
                 .uri(openAiBaseUrl + "/responses")
                 .header("Authorization", "Bearer " + openAiApiKey)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -170,12 +168,9 @@ public class AiSummaryService {
                         )
                 ))
                 .retrieve()
-                .body(JsonNode.class);
+                .body(String.class);
 
-        if (response == null) {
-            throw new IllegalStateException("Empty OpenAI response");
-        }
-
+        JsonNode response = parseJsonResponse(responseBody, "OpenAI");
         JsonNode directText = response.get("output_text");
         if (directText != null && directText.isTextual() && !directText.asText().isBlank()) {
             return directText.asText().trim();
@@ -197,6 +192,18 @@ public class AiSummaryService {
         }
 
         throw new IllegalStateException("OpenAI response did not contain text");
+    }
+
+    private JsonNode parseJsonResponse(String responseBody, String provider) {
+        if (responseBody == null || responseBody.isBlank()) {
+            throw new IllegalStateException("Empty " + provider + " response");
+        }
+
+        try {
+            return JsonMapper.builder().build().readTree(responseBody);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Invalid " + provider + " response", exception);
+        }
     }
 
     private UrgencyLevel parseUrgency(String output) {

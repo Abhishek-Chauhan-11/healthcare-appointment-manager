@@ -93,4 +93,18 @@ class AppointmentBookingServiceTests {
                 .anyMatch(job -> job.getType() == NotificationType.DOCTOR_LEAVE
                         && job.getRecipientEmail().equals("patient@healthcare.com"));
     }
+
+    @Test
+    void completedVisitStillKeepsItsReservedTimeUnavailable() {
+        DoctorProfile doctor = doctorRepository.findByActiveTrueOrderByIdAsc().get(0);
+        LocalDate selectedDate = LocalDate.now().plusDays(5);
+        LocalTime time = bookingService.availableSlots(doctor.getId(), selectedDate).get(0);
+        Appointment appointment = bookingService.book(
+                "patient@healthcare.com", doctor.getId(), selectedDate, time,
+                "Routine demonstration visit");
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.saveAndFlush(appointment);
+
+        assertThat(bookingService.availableSlots(doctor.getId(), selectedDate)).doesNotContain(time);
+    }
 }

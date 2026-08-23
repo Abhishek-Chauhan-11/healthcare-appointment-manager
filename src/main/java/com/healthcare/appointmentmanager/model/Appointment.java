@@ -1,7 +1,9 @@
 package com.healthcare.appointmentmanager.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,11 +35,11 @@ public class Appointment {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     @Column(nullable = false)
     private String symptoms;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String preVisitSummary;
 
     @Enumerated(EnumType.STRING)
@@ -53,16 +55,16 @@ public class Appointment {
 
     private LocalDateTime holdExpiresAt;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String clinicalNotes;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String prescription;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String postVisitSummary;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     private String followUpInstructions;
 
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,9 @@
 package com.healthcare.appointmentmanager.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,7 +25,7 @@ public class MedicationReminder {
     @Column(nullable = false)
     private LocalDateTime scheduledFor;
 
-    @Lob
+    @JdbcTypeCode(Types.LONGVARCHAR)
     @Column(nullable = false)
     private String medicationText;
 
